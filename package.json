@@ -1,0 +1,14 @@
+{
+  "name": "quantum_tunneling_salesman",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev" : "cd client && npm run start",
+    "prod" : "cd client && npm run build",
+    "server": "cd server && npm run start"
+  },
+  "author": "MrPurple",
+  "license": "ISC"
+}

@@ -1,5 +1,6 @@
 import './App.css';
 import Map from './components/Map'
+import TSPGeoCalc from './components/TSPGeoCalc';
 
 function App() {
   return (
@@ -14,7 +15,7 @@ function App() {
         </div>
       </div>
       <div id="divContent">
-        <Map />
+        <TSPGeoCalc />
       </div>
       <div id="divFooter">
 

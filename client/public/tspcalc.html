@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Mapbox Optimization Lunchbox</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .map-overlay-container {
+            position: absolute;
+            width: 25%;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            height: 100vh;
+        }
+
+        .map-overlay {
+            font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            background-color: #fff;
+            border-radius: 3px;
+            padding: 0 10px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            overflow: scroll;
+            height: 100vh;
+        }
+
+        .map-overlay h2 {
+            margin: 0 0 10px;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <script
+        src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.min.js"></script>
+    <link rel="stylesheet"
+        href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.css"
+        type="text/css" />
+    <script src="https://unpkg.com/@turf/turf/turf.min.js"></script>
+
+    <div id="map"></div>
+
+    <div class="map-overlay-container">
+        <div class="map-overlay">
+            <h2 id="title">Accepted orders</h2>
+            <ul id="addresses"></ul>
+        </div>
+    </div>
+
+    <script>
+        // Change this to set the app to your location 
+        // This value is used for the map center, the search proximity bias, and the store location
+        const storeLocation = [-75.158, 39.945];
+
+        mapboxgl.accessToken = 'pk.eyJ1IjoibXJwdXJwbGUiLCJhIjoiY2trN2E5NjQ2MGMyYTJ4cTJnOHNrZDhubyJ9.kviZ0IHbmwqLax5EG3gtaw';
+        const transformRequest = (url) => {
+            const hasQuery = url.indexOf("?") !== -1;
+            const suffix = hasQuery ? "&pluginName=lunchboxOptimization" : "?pluginName=lunchboxOptimization";
+            return {
+                url: url + suffix
+            }
+        }
+
+        // This object will hold all the delivery stops, starting with the store location
+        const orders = {
+            type: "FeatureCollection",
+            features: [{
+                type: 'Feature',
+                properties: {
+                    address: 'Store location',
+                    accepted: 'home'
+                },
+                geometry: {
+                    type: 'Point',
+                    coordinates: storeLocation
+                }
+            }
+            ]
+        };
+
+        let iso = {};
+
+        // UI elements
+        const titleText = document.getElementById('title');
+        const addressList = document.getElementById('addresses');
+
+        const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: storeLocation,
+            zoom: 13,
+            transformRequest: transformRequest
+        });
+
+        // Note the parameters to exclude animation and markers, and to set the proximity bias
+        // Proximity bias helps the API return more relevant local results
+        const geocoder = new MapboxGeocoder({
+            accessToken: mapboxgl.accessToken,
+            mapboxgl: mapboxgl,
+            flyTo: false,
+            marker: false,
+            proximity: storeLocation
+        });
+
+        map.addControl(geocoder, "top-right");
+
+        const setOverview = function (route) {
+            const trip = route.trips[0];
+            const waypoints = route.waypoints;
+            // Set some basic stats for the route in the sidebar
+            titleText.innerText = `${(trip.distance / 1609.344).toFixed(1)} miles | ${(trip.duration / 60).toFixed(0)} minutes`;
+            addressList.innerText = '';
+
+            // Add the delivery addresses and turn-by-turn instructions to the sidebar for each leg of the trip
+            trip.legs.forEach((leg, i) => {
+                const listItem = document.createElement('li');
+                // We want the destination address when we depart, hence index + 1
+                if (i < trip.legs.length - 1) {
+                    const nextDelivery = waypoints.find(({ waypoint_index }) => waypoint_index === i + 1);
+                    console.log(nextDelivery);
+                    listItem.innerHTML = `<b>Deliver to: ${nextDelivery.address}</b>`;
+                } else {
+                    // We're outside the range of deliveries, so let's go home
+                    listItem.innerHTML = `<b>Return to store</b>`;
+                }
+                addressList.appendChild(listItem);
+                // add the TBT instructions for this leg
+                leg.steps.forEach((step) => {
+                    const listItem = document.createElement('li');
+                    listItem.innerText = step.maneuver.instruction;
+                    addressList.appendChild(listItem);
+                });
+            });
+        }
+
+        const setTripLine = function (trip) {
+            const routeLine = {
+                type: 'FeatureCollection',
+                features: [{
+                    properties: {},
+                    geometry: trip.geometry,
+                }],
+            };
+
+            map.getSource('route').setData(routeLine);
+        }
+
+        const setStops = function (stops) {
+            const deliveries = {
+                type: 'FeatureCollection',
+                features: [
+                ],
+            };
+
+            stops.forEach((stop) => {
+                const delivery = {
+                    properties: {
+                        name: stop.name,
+                        stop_number: stop.waypoint_index
+                    },
+                    geometry: {
+                        type: 'Point',
+                        coordinates: stop.location,
+                    },
+                };
+                deliveries.features.push(delivery);
+            });
+            map.getSource('deliveries').setData(deliveries);
+        }
+
+        const getDeliveryRoute = function () {
+            // Filter out only the orders that have been accepted
+            const deliverable = orders.features.filter(point => point.properties.accepted);
+
+            // Once there are 5 deliveries, get the delivery route
+            if (deliverable.length > 5) {
+                const coords = [];
+
+                deliverable.forEach((delivery) => {
+                    coords.push(delivery.geometry.coordinates.join(','));
+                });
+                const approachParam = ';curb';
+                let optimizeUrl = 'https://api.mapbox.com/optimized-trips/v1/';
+                optimizeUrl += 'mapbox/driving-traffic/';
+                optimizeUrl += coords.join(';');
+                optimizeUrl += '?access_token=' + mapboxgl.accessToken;
+                optimizeUrl += '&geometries=geojson&overview=full&steps=true';
+                optimizeUrl += '&approaches=' + approachParam.repeat(coords.length - 1);
+
+                // To inspect the response in the browser, remove for production
+                console.log(optimizeUrl);
+
+                fetch(optimizeUrl).then((res) => res.json()).then((res) => {
+                    // Add the original address text to the waypoints
+                    res.waypoints.forEach((waypoint, i) => {
+                        waypoint.address = waypoint[i] == 0 ? 'Start' : deliverable[i].properties.address;
+                    });
+
+                    // Add the distance, duration, and turn-by-turn instructions to the sidebar
+                    setOverview(res);
+
+                    // Draw the route and stops on the map
+                    setTripLine(res.trips[0]);
+                    setStops(res.waypoints);
+                });
+            };
+        };
+
+        const checkAddressInServiceArea = function (address) {
+            // Save the address text from the response
+            const addressText = address.address ? address.address + ' ' + address.text : address.text;
+
+            const order = {
+                type: 'Feature',
+                properties: {
+                    address: addressText,
+                },
+                geometry: {
+                    type: 'Point',
+                    coordinates: address.geometry.coordinates
+                }
+            };
+
+            // Returns true if the point is in the isochrone
+            const status = turf.booleanPointInPolygon(order, iso.features[0]);
+            order.properties.accepted = status;
+
+            // If the point is inside, the order is accepted, so add it to the sidebar
+            if (status) {
+                const listItem = document.createElement('li');
+                listItem.innerText = order.properties.address;
+                addressList.appendChild(listItem);
+            }
+
+            // All orders get added to the map, where they are colored by accepted status
+            orders.features.push(order);
+            map.getSource('orders').setData(orders);
+            getDeliveryRoute();
+        };
+
+        const getIso = function () {
+            let isoUrl = 'https://api.mapbox.com/isochrone/v1/mapbox/driving/' + storeLocation.join(',') + '.json';
+            isoUrl += '?contours_minutes=10&polygons=true&access_token=' + mapboxgl.accessToken;
+            fetch(isoUrl).then(res => res.json()).then(res => {
+                iso = res;
+                map.getSource("iso").setData(iso);
+            });
+        };
+
+        map.on("load", () => {
+            map.addSource("iso", {
+                type: "geojson",
+                data: {
+                    type: "FeatureCollection",
+                    features: [
+                    ]
+                }
+            });
+
+            map.addLayer({
+                "id": "isoLayer",
+                "type": "fill",
+                "source": "iso",
+                "layout": {},
+                "paint": {
+                    "fill-color": "purple",
+                    "fill-opacity": 0.3
+                }
+            }, "road-label");
+
+            map.addSource('route', {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: [
+                    ],
+                },
+            });
+
+            map.addLayer({
+                id: 'routeLayer',
+                type: 'line',
+                source: 'route',
+                layout: {},
+                paint: {
+                    'line-color': 'cornflowerblue',
+                    'line-width': 10,
+                },
+            }, 'road-label');
+
+            map.addLayer({
+                id: 'routeArrows',
+                source: 'route',
+                type: 'symbol',
+                layout: {
+                    'symbol-placement': 'line',
+                    'text-field': '→',
+                    'text-rotate': 0,
+                    'text-keep-upright': false,
+                    'symbol-spacing': 30,
+                    'text-size': 22,
+                    'text-offset': [0, -0.1],
+                },
+                paint: {
+                    'text-color': 'white',
+                    'text-halo-color': 'white',
+                    'text-halo-width': 1,
+                },
+            }, 'road-label');
+
+            map.addSource("orders", {
+                type: "geojson",
+                data: orders
+            });
+
+            map.addLayer({
+                "id": "ordersLayer",
+                "type": "circle",
+                "source": "orders",
+                "layout": {},
+                "paint": {
+                    "circle-radius": 10,
+                    "circle-color": [
+                        'case',
+                        ['get', 'accepted'],
+                        'blue',
+                        ['==', ['get', 'accepted'], 'home'],
+                        'black',
+                        'red'
+                    ]
+                }
+            }, "road-label");
+
+            map.addSource("deliveries", {
+                type: "geojson",
+                data: {
+                    type: "FeatureCollection",
+                    features: [
+                    ]
+                }
+            });
+
+            map.addLayer({
+                "id": "deliveriesLayer",
+                "type": "circle",
+                "source": "deliveries",
+                "layout": {},
+                "paint": {
+                    "circle-color": 'white',
+                    "circle-stroke-color": '#444',
+                    "circle-radius": 18
+                }
+            }, "road-label");
+
+            map.addLayer({
+                "id": "deliveriesLabels",
+                "type": "symbol",
+                "source": "deliveries",
+                "layout": {
+                    'text-field': ['get', 'stop_number']
+                },
+                "paint": {
+                    "text-color": '#444'
+                }
+            });
+
+            // Do this when the geocoder returns a result
+            geocoder.on("result", ev => {
+                checkAddressInServiceArea(ev.result);
+            });
+
+            getIso();
+        });
+    </script>
+</body>
+</html>

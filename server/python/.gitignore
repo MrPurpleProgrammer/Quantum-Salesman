@@ -8,7 +8,7 @@ instance/
 .pytest_cache/
 .coverage
 htmlcov/
-
+.env
 dist/
 build/
 *.egg-info/

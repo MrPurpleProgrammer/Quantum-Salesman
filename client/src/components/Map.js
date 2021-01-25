@@ -4,7 +4,7 @@ import mapboxgl from 'mapbox-gl'; // or "const mapboxgl = require('mapbox-gl');"
 import MapboxDirections from '@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions'
 import '@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions.css'
 
-mapboxgl.accessToken = 'pk.eyJ1IjoibXJwdXJwbGUiLCJhIjoiY2tqcnA4NWs1MXRzdzJ4bGV3eHFuemx1cSJ9.R1GOV--AHq_E-pN8xd9NcA';
+mapboxgl.accessToken = process.env.REACT_APP_MAP_API_KEY;
 
 function Map() {
     const mapContainer = useRef('')

@@ -13,7 +13,7 @@ function TSPGeoCalc() {
     const mapContainer = useRef('')
     const [storeLocation, setStoreLocation] = useState([0, 0]);
     const [mapState, setMapState] = useState(null);
-    mapboxgl.accessToken = 'pk.eyJ1IjoibXJwdXJwbGUiLCJhIjoiY2trN2E5NjQ2MGMyYTJ4cTJnOHNrZDhubyJ9.kviZ0IHbmwqLax5EG3gtaw';
+    mapboxgl.accessToken = process.env.REACT_APP_MAP_API_KEY;
     const transformRequest = (url) => {
         const hasQuery = url.indexOf("?") !== -1;
         const suffix = hasQuery ? "&pluginName=lunchboxOptimization" : "?pluginName=lunchboxOptimization";

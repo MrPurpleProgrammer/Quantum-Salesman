@@ -1,15 +1,43 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #343434
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace
+}
+
+@font-face {
+  font-family: Harlow;
+  src: url(./fonts/HarlowSolidPlain.otf)
+}
+
 .App {
-  text-align: center;
+  text-align: center
+}
+
+::-webkit-scrollbar {
+  width: 0!important;
+  height: 0!important;
+  background: #fff!important
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #657aad!important
 }
 
 .App-logo {
   height: 40vmin;
-  pointer-events: none;
+  pointer-events: none
 }
 
-@media (prefers-reduced-motion: no-preference) {
+@media (prefers-reduced-motion:no-preference) {
   .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+    -webkit-animation: App-logo-spin 20s linear infinite;
+    animation: App-logo-spin 20s linear infinite
   }
 }
 
@@ -21,19 +49,28 @@
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: white;
+  color: #fff
 }
 
 .App-link {
-  color: #61dafb;
+  color: #61dafb
+}
+
+@-webkit-keyframes App-logo-spin {
+  0% {
+    transform: rotate(0deg)
+  }
+  to {
+    transform: rotate(1turn)
+  }
 }
 
 @keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+  0% {
+    transform: rotate(0deg)
   }
   to {
-    transform: rotate(360deg);
+    transform: rotate(1turn)
   }
 }
 
@@ -42,7 +79,7 @@
   width: 100%;
   position: fixed;
   top: 0;
-  left: 0;
+  left: 0
 }
 
 .parentHeaderContainer {
@@ -51,8 +88,7 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 90px;
-  background-color: #fff;
+  height: 90px
 }
 
 .mapContainer {
@@ -60,8 +96,8 @@
   height: 100%;
   width: 100%;
   position: absolute;
-  top: 9%;
-  bottom: 0;
+  top: 0;
+  bottom: 0
 }
 
 .headerContainer {
@@ -71,37 +107,22 @@
   width: 100%;
   height: 100%;
   justify-content: space-between;
-  align-items: center;
-}
-
-.logoContainer {
-  margin: 0px 50px;
-  display: flex;
-  align-items: center;
-}
-
-.logoContainer i {
-  font-size: 50px;
-  margin-right: 20px;
-}
-
-.headeContent {
-  margin: 0px 50px;
+  align-items: center
 }
 
 .mapboxgl-canvas {
-  height: 110% !important;
-  width: 100% !important;
+  height: 110%!important;
+  width: 100%!important
 }
 
 .directionsContainer {
   position: relative;
   top: 20%;
-  left: 10%;
+  left: 10%
 }
 
 .coordinates {
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, .5);
   color: #fff;
   position: absolute;
   bottom: 40px;
@@ -111,34 +132,620 @@
   font-size: 11px;
   line-height: 18px;
   border-radius: 3px;
-  display: none;
+  display: none
 }
 
 .mapboxgl-ctrl-top-left {
   top: 12%;
-  left: 1%;
-}
-
-.map-overlay-container {
-  position: absolute;
-  width: 25%;
-  top: 9%;
-  left: 0;
-  z-index: 1;
-  height: 100vh;
-}
-
-.map-overlay {
-  font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
-  background-color: #fff;
-  border-radius: 3px;
-  padding: 0 10px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-  overflow: scroll;
-  height: 100vh;
+  left: 1%
 }
 
 .map-overlay h2 {
   margin: 0 0 10px;
-  padding: 10px;
+  padding: 10px
+}
+
+.mapboxgl-ctrl-geocoder {
+  margin: 20px!important;
+  width: 100%!important;
+  font-size: 15px!important;
+  line-height: 20px!important;
+  max-width: -webkit-fill-available!important;
+  border-radius: 9px!important
+}
+
+@-webkit-keyframes alertEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(-50px)
+  }
+  to {
+    opacity: .9;
+    transform: translateY(0)
+  }
+}
+
+@keyframes alertEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(-50px)
+  }
+  to {
+    opacity: .9;
+    transform: translateY(0)
+  }
+}
+
+@media only screen and (min-width: 769px) {
+  .map-overlay-container {
+    position: absolute;
+    width: 350px;
+    top: 5%;
+    left: 2%;
+    z-index: 1
+  }
+  .map-overlay {
+    font: 12px/20px "Helvetica Neue", Arial, Helvetica, sans-serif;
+    background-color: #e9e9e9;
+    border-radius: 10px;
+    border: 5px solid #10177e;
+    padding: 0 10px;
+    overflow: scroll
+  }
+  .routeDetails {
+    background: #d5d5d5;
+    border-radius: 5px;
+    border: 1px solid #707070;
+    height: 53vh;
+    margin-top: 15px;
+    overflow: scroll;
+    overflow-x: hidden
+  }
+  .routeDetails>div {
+    padding: 10px;
+    font-family: Montserrat;
+    border-bottom: 1px dashed #10177e;
+    margin: 0 20px;
+    color: #0d173e
+  }
+  .routeDetails>div>h1 {
+    font-size: 13px
+  }
+  .routeDetails>div>ul {
+    padding: 0 15px
+  }
+  .routeDetails>div>ul>li {
+    list-style: decimal
+  }
+  .alertsContainer {
+    position: fixed;
+    top: 5%;
+    right: 2%;
+    z-index: 1000
+  }
+  .modal {
+    z-index: 1000;
+    background: #e9e9e9;
+    width: 375px;
+    border-radius: 10px;
+    display: none;
+    align-items: center;
+    opacity: 0;
+    padding: 10px 5px;
+    margin-bottom: 12px;
+}
+  .maxRouteLimit, .outsideBounds {
+    background-color: #d29999
+  }
+  .modal h1 {
+    font-size: 13px;
+    font-family: Montserrat;
+    font-weight: 400;
+    padding: 0 20px;
+    color: #000e44;
+    margin: 0;
+    line-height: 20px
+  }
+  .modal i {
+    position: relative;
+    bottom: 25px;
+    right: 10px;
+    padding: 25px 0;
+    color: #9a1414;
+    cursor: pointer;
+    font-style: normal
+  }
+  .modalEnter {
+    display: flex;
+    -webkit-animation: alertEnter 1s .5s 1 forwards;
+    animation: alertEnter 1s .5s 1 forwards
+  }
+  .modalExit {
+    display: flex;
+    animation: alertEnter 1s .3s 1 reverse
+  }
+  .maxRouteLimit button {
+    height: 28px;
+    position: absolute;
+    top: 80px;
+    left: 23px;
+    width: 85%;
+    font-size: 12px;
+    background: #bb5b5b;
+    border: 0 solid #fff;
+    border-radius: 10px;
+    font-weight: 700;
+    margin: 0 20px 0 0;
+    color: #0d173e;
+    cursor: pointer
+  }
+  .overlayHeader {
+    display: block;
+    place-items: none;
+  }
+  .logoContainer {
+    color: #263571;
+    font-family: Harlow;
+    margin: 15px 0;
+    width: 100%;
+    display: flex;
+    justify-content: center
+  }
+  .logoContainer h1 {
+    font-size: 30px;
+    font-weight: 300;
+    padding: 0 5px
+  }
+  .instructions {
+    font-family: Montserrat;
+    font-size: 14px;
+    padding: 0 0 0 20px
+  }
+  .mapboxgl-ctrl-geocoder input[type=text] {
+    padding: 5px 35px!important;
+    font-size: 14px!important;
+    height: 35px!important;
+    border: 1px solid #707070!important;
+    border-radius: 9px!important;
+    box-shadow: 1px 1px 5px #ababab!important
+  }
+  .routeContent {
+    margin: 25px 10px;
+    padding-top: 15px;
+    border-top: 3px dashed #10177e
+  }
+  .overviewTextBox {
+    display: flex;
+    background: #d5d5d5;
+    border-radius: 5px;
+    border: 1px solid #707070;
+    justify-content: center;
+    height: 70px
+  }
+  .overviewTextBox div:first-child, .overviewTextBox div:nth-child(2) {
+    align-self: center;
+    text-align: center;
+    border-right: 2px dashed grey;
+    padding: 0 20px
+  }
+  .overviewTextBox div:nth-child(3) {
+    align-self: center;
+    text-align: center;
+    border-right: 0 dashed grey;
+    padding: 0 20px
+  }
+  .overviewTextBox div>h1 {
+    margin: 0;
+    padding: 0;
+    font-family: Montserrat;
+    font-size: 13px;
+    font-weight: 900;
+    color: #0d173e
+  }
+  .overviewTextBox div>p {
+    margin: 0 10px;
+    font-size: 10px;
+    font-family: Montserrat;
+    font-weight: 400;
+    color: #0d173e
+  }
+}
+
+@media only screen and (min-width: 501px) and (max-width: 768px) {
+  .map-overlay-container {
+    position: relative;
+    width: 90%;
+    top: 5%;
+    /* left: 2%; */
+    z-index: 1;
+    margin: auto;
+  }
+  .map-overlay {
+    font: 12px/20px "Helvetica Neue", Arial, Helvetica, sans-serif;
+    background-color: #e9e9e9;
+    border-radius: 10px;
+    border: 5px solid #10177e;
+    padding: 0 10px;
+    /* height: 90vh; */
+    overflow: scroll;
+  }
+  .routeDetails {
+    display: none;
+    background: #d5d5d5;
+    border-radius: 5px;
+    border: 1px solid #707070;
+    height: 53vh;
+    margin-top: 15px;
+    overflow: scroll;
+    overflow-x: hidden
+  }
+  .routeDetails>div {
+    padding: 10px;
+    font-family: Montserrat;
+    border-bottom: 1px dashed #10177e;
+    margin: 0 20px;
+    color: #0d173e
+  }
+  .routeDetails>div>h1 {
+    font-size: 13px
+  }
+  .routeDetails>div>ul {
+    padding: 0 15px
+  }
+  .routeDetails>div>ul>li {
+    list-style: decimal
+  }
+  .alertsContainer {
+    position: relative;
+    top: 7%;
+    /* margin: auto; */
+    /* right: 2%; */
+    z-index: 1000;
+  }
+  .modal {
+    z-index: 1000;
+    background: #e9e9e9;
+    width: 85%;
+    border-radius: 10px;
+    display: none;
+    align-items: center;
+    opacity: 0;
+    padding: 10px 5px;
+    margin: auto;
+    margin-bottom: 12px;
+  }
+  .maxRouteLimit, .outsideBounds {
+    background-color: #d29999
+  }
+  .modal h1 {
+    font-size: 13px;
+    font-family: Montserrat;
+    font-weight: 400;
+    padding: 0 20px;
+    color: #000e44;
+    margin: 0;
+    line-height: 20px
+  }
+  .modal i {
+    position: relative;
+    bottom: 25px;
+    right: 10px;
+    padding: 25px 0;
+    color: #9a1414;
+    cursor: pointer;
+    font-style: normal
+  }
+  .modalEnter {
+    display: flex;
+    -webkit-animation: alertEnter 1s .5s 1 forwards;
+    animation: alertEnter 1s .5s 1 forwards
+  }
+  .modalExit {
+    display: flex;
+    animation: alertEnter 1s .3s 1 reverse
+  }
+  .maxRouteLimit button {
+    height: 28px;
+    position: absolute;
+    top: 80px;
+    left: 23px;
+    width: 85%;
+    font-size: 12px;
+    background: #bb5b5b;
+    border: 0 solid #fff;
+    border-radius: 10px;
+    font-weight: 700;
+    margin: 0 20px 0 0;
+    color: #0d173e;
+    cursor: pointer
+  }
+  .overlayHeader {
+    display: flex;
+    place-items: center;
+    margin: 10px 0px;
+  }
+  .logoContainer {
+    color: #263571;
+    font-family: Harlow;
+    margin: 0px;
+    /* width: 100%; */
+    display: flex;
+    justify-content: center;
+    /* vertical-align: middle; */
+  }
+  .logoContainer h1 {
+    font-size: 20px;
+    font-weight: 300;
+    padding: 0 5px;
+    margin: 10px 0;
+  }
+  .instructions {
+    font-family: Montserrat;
+    font-size: 12px;
+    padding: 0px 0 0 15px;
+    height: fit-content;
+    margin: 0px 0;
+  }
+  .mapboxgl-ctrl-geocoder--icon-search {
+    position: absolute;
+    top: 7px !important;
+    left: 12px;
+    width: 23px;
+    height: 23px;
+  }
+  .mapboxgl-ctrl-geocoder input[type=text] {
+    padding: 5px 35px!important;
+    font-size: 14px!important;
+    height: 35px!important;
+    border: 1px solid #707070!important;
+    border-radius: 9px!important;
+    box-shadow: 1px 1px 5px #ababab!important;
+  }
+  .routeContent {
+    margin: 0px -11px;
+    border-top: 0px dashed #10177e;
+  }
+  .overviewTextBox {
+    display: flex;
+    background: #d5d5d5;
+    /* border-radius: 5px; */
+    border: 1px solid #707070;
+    justify-content: center;
+    height: 70px;
+  }
+  .overviewTextBox div:first-child {
+    align-self: center;
+    text-align: center;
+    padding: 0 20px;
+    width: 30%;
+  }
+  .overviewTextBox div:nth-child(3) {
+    align-self: center;
+    text-align: center;
+    padding: 0 20px;
+    width: 30%;
+  }
+  .overviewTextBox div:nth-child(2) {
+    align-self: center;
+    text-align: center;
+    border-right: 2px dashed grey;
+    border-left: 2px dashed grey;
+    width: 30%;
+    padding: 0 20px
+  }
+  .overviewTextBox div>h1 {
+    margin: 0;
+    padding: 0;
+    font-family: Montserrat;
+    font-size: 13px;
+    font-weight: 900;
+    color: #0d173e
+  }
+  .overviewTextBox div>p {
+    margin: 0 10px;
+    font-size: 10px;
+    font-family: Montserrat;
+    font-weight: 400;
+    color: #0d173e
+  }
+}
+
+@media only screen and (max-width: 500px) {
+  .map-overlay-container {
+    position: relative;
+    width: 90%;
+    top: 5%;
+    /* left: 2%; */
+    z-index: 1;
+    margin: auto;
+  }
+  .map-overlay {
+    font: 12px/20px "Helvetica Neue", Arial, Helvetica, sans-serif;
+    background-color: #e9e9e9;
+    border-radius: 10px;
+    border: 5px solid #10177e;
+    padding: 0 10px;
+    /* height: 90vh; */
+    overflow: scroll;
+  }
+  .routeDetails {
+    display: none;
+    background: #d5d5d5;
+    border-radius: 5px;
+    border: 1px solid #707070;
+    height: 53vh;
+    margin-top: 15px;
+    overflow: scroll;
+    overflow-x: hidden
+  }
+  .routeDetails>div {
+    padding: 10px;
+    font-family: Montserrat;
+    border-bottom: 1px dashed #10177e;
+    margin: 0 20px;
+    color: #0d173e
+  }
+  .routeDetails>div>h1 {
+    font-size: 13px
+  }
+  .routeDetails>div>ul {
+    padding: 0 15px
+  }
+  .routeDetails>div>ul>li {
+    list-style: decimal
+  }
+  .alertsContainer {
+    position: relative;
+    top: 7%;
+    /* margin: auto; */
+    /* right: 2%; */
+    z-index: 1000;
+  }
+  .modal {
+    z-index: 1000;
+    background: #e9e9e9;
+    width: 85%;
+    border-radius: 10px;
+    display: none;
+    align-items: center;
+    opacity: 0;
+    padding: 10px 5px;
+    margin: auto;
+    margin-bottom: 12px;
+  }
+  .maxRouteLimit, .outsideBounds {
+    background-color: #d29999
+  }
+  .modal h1 {
+    font-size: 13px;
+    font-family: Montserrat;
+    font-weight: 400;
+    padding: 0 20px;
+    color: #000e44;
+    margin: 0;
+    line-height: 20px
+  }
+  .modal i {
+    position: relative;
+    bottom: 25px;
+    right: 10px;
+    padding: 25px 0;
+    color: #9a1414;
+    cursor: pointer;
+    font-style: normal
+  }
+  .modalEnter {
+    display: flex;
+    -webkit-animation: alertEnter 1s .5s 1 forwards;
+    animation: alertEnter 1s .5s 1 forwards
+  }
+  .modalExit {
+    display: flex;
+    animation: alertEnter 1s .3s 1 reverse
+  }
+  .maxRouteLimit button {
+    height: 28px;
+    position: absolute;
+    top: 80px;
+    left: 23px;
+    width: 85%;
+    font-size: 12px;
+    background: #bb5b5b;
+    border: 0 solid #fff;
+    border-radius: 10px;
+    font-weight: 700;
+    margin: 0 20px 0 0;
+    color: #0d173e;
+    cursor: pointer
+  }
+  .overlayHeader {
+    display: flex;
+    place-items: center;
+    margin: 10px 0px;
+  }
+  .logoContainer {
+    color: #263571;
+    font-family: Harlow;
+    margin: 0px;
+    /* width: 100%; */
+    display: flex;
+    justify-content: center;
+    /* vertical-align: middle; */
+  }
+  .logoContainer h1 {
+    font-size: 20px;
+    font-weight: 300;
+    padding: 0 5px;
+    margin: 10px 0;
+    display: none;
+  }
+  .instructions {
+    font-family: Montserrat;
+    font-size: 12px;
+    padding: 0px 0 0 0px;
+    height: fit-content;
+    margin: 0px 0;
+  }
+  .mapboxgl-ctrl-geocoder--icon-search {
+    position: absolute;
+    top: 7px !important;
+    left: 12px;
+    width: 23px;
+    height: 23px;
+  }
+  .mapboxgl-ctrl-geocoder input[type=text] {
+    padding: 5px 35px!important;
+    font-size: 14px!important;
+    height: 35px!important;
+    border: 1px solid #707070!important;
+    border-radius: 9px!important;
+    box-shadow: 1px 1px 5px #ababab!important;
+  }
+  .routeContent {
+    margin: 0px -11px;
+    border-top: 0px dashed #10177e;
+  }
+  .overviewTextBox {
+    display: flex;
+    background: #d5d5d5;
+    /* border-radius: 5px; */
+    border: 1px solid #707070;
+    justify-content: center;
+    height: 70px;
+  }
+  .overviewTextBox div:first-child {
+    align-self: center;
+    text-align: center;
+    padding: 0 20px;
+    width: 30%;
+  }
+  .overviewTextBox div:nth-child(3) {
+    align-self: center;
+    text-align: center;
+    padding: 0 20px;
+    width: 30%;
+  }
+  .overviewTextBox div:nth-child(2) {
+    align-self: center;
+    text-align: center;
+    border-right: 2px dashed grey;
+    border-left: 2px dashed grey;
+    width: 30%;
+    padding: 0 20px
+  }
+  .overviewTextBox div>h1 {
+    margin: 0;
+    padding: 0;
+    font-family: Montserrat;
+    font-size: 13px;
+    font-weight: 900;
+    color: #0d173e
+  }
+  .overviewTextBox div>p {
+    margin: 0 10px;
+    font-size: 10px;
+    font-family: Montserrat;
+    font-weight: 400;
+    color: #0d173e
+  }
 }
